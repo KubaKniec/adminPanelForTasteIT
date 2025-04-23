@@ -24,22 +24,23 @@
     </style>
 </head>
 <body>
-    hello
-<div th:text="${test}"></div>
-
     <table>
         <thead>
         <tr>
             <th>ID</th>
-            <th>Nazwa</th>
-            <th>Akcja</th>
+            <th>Name</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="tag : ${tags}">
             <td th:text="${tag.tagId}"></td>
             <td th:text="${tag.tagName}"></td>
-            <td><button>Kliknij mnie</button></td>
+            <td>
+                <form th:action="${'http://localhost:8081/tags/' + tag.tagId}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

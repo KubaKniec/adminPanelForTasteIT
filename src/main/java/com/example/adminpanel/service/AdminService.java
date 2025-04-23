@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -21,6 +22,12 @@ public class AdminService {
         for (TagDto tagDto : tagDtos) {
             System.out.println(tagDto);
         }
-        return new ArrayList<>();
+        return Arrays.stream(tagDtos)
+                .toList();
+
+    }
+
+    public void deleteTagById(String id) {
+        restTemplate.delete(URL+"tag/" + id);
     }
 }
