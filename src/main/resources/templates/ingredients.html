@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredients</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+        img {
+            width: 60px;
+            height: auto;
+        }
+    </style>
+    <script>
+        function toggleDescription(id) {
+            const shortDesc = document.getElementById('short-' + id);
+            const fullDesc = document.getElementById('full-' + id);
+            const btn = document.getElementById('btn-' + id);
+
+            if (fullDesc.style.display === 'none') {
+                shortDesc.style.display = 'none';
+                fullDesc.style.display = 'inline';
+                btn.textContent = '...';
+            } else {
+                shortDesc.style.display = 'inline';
+                fullDesc.style.display = 'none';
+                btn.textContent = '...';
+            }
+        }
+    </script>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Strength</th>
+        <th>Alcohol</th>
+        <th>Image</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ingredient : ${ingredients}">
+        <td th:text="${ingredient.ingredientId}"></td>
+        <td th:text="${ingredient.name}"></td>
+        <td>
+                <span th:id="'short-' + ${ingredient.ingredientId}"
+                      th:text="${#strings.length(ingredient.description) > 100} ? ${ingredient.description.substring(0, 100)} + '...' : ${ingredient.description}"
+                      th:style="${#strings.length(ingredient.description) > 100} ? '' : 'display:none;'">
+                </span>
+            <span th:id="'full-' + ${ingredient.ingredientId}"
+                  th:text="${ingredient.description}"
+                  style="display:none;">
+                </span>
+            <br/>
+            <button th:id="'btn-' + ${ingredient.ingredientId}"
+                    type="button"
+                    th:if="${#strings.length(ingredient.description) > 100}"
+                    th:attr="onclick=|toggleDescription('${ingredient.ingredientId}')|">
+                ...
+            </button>
+        </td>
+        <td th:text="${ingredient.type}"></td>
+        <td th:text="${ingredient.strength}"></td>
+        <td th:text="${ingredient.alcohol} ? 'Yes' : 'No'"></td>
+        <td><img th:src="${ingredient.imageURL}" alt="Ingredient image"/></td>
+        <td>
+            <form th:action="${'http://localhost:8081/ingredients/' + ingredient.ingredientId}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

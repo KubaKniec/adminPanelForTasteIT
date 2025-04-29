@@ -1,6 +1,6 @@
 package com.example.adminpanel.config;
 
-import com.example.adminpanel.dto.TagDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -10,10 +10,10 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateConfig {
     private static final String URL = "http://localhost:8080/api/v1/";
     @Bean
-    public RestTemplate createRestTemplate() {
+    public RestTemplate createRestTemplate(@Value("${login}") String login, @Value("${password}") String password) {
         RestTemplate restTemplate = new RestTemplate();
 
-        LoginDto token = restTemplate.postForObject(URL+"auth/login",new LoginDto(), LoginDto.class); //TODO czy nie bedzie problemu przy dlugo dzialajacej apce
+        LoginDto token = restTemplate.postForObject(URL+"auth/login",new LoginDto(login,password), LoginDto.class); //TODO czy nie bedzie problemu przy dlugo dzialajacej apce
 
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
@@ -30,10 +30,9 @@ class LoginDto {
     private String email;
     private String password;
 
-    public LoginDto() {
-        email = "test@test.pl";
-        password = "Test1234$";
-        //TODO zabezpieczyc dane logowania
+    public LoginDto(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public String getSessionToken() {

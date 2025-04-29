@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Users</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 20px auto;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .roles-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .roles-list li {
+      display: inline-block;
+      background: #e0e0e0;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: 2px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+<h1 style="text-align: center;">Users</h1>
+<table>
+  <thead>
+  <tr>
+    <th>User ID</th>
+    <th>Email</th>
+    <th>Display Name</th>
+    <th>Bio</th>
+    <th>Profile Picture</th>
+    <th>Roles</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="user : ${users}">
+    <td th:text="${user.userId}">USER_ID</td>
+    <td>
+      <a th:href="'mailto:' + ${user.email}" th:text="${user.email}">email@example.com</a>
+    </td>
+    <td th:text="${user.displayName}">Display Name</td>
+    <td th:text="${user.bio}">Bio</td>
+    <td>
+      <img th:src="${user.profilePicture}" alt="Profile picture"/>
+    </td>
+    <td>
+      <ul class="roles-list">
+        <li th:each="role : ${user.roles}" th:text="${role}">ROLE</li>
+      </ul>
+    </td>
+    <td>
+      <form th:action="${'http://localhost:8081/users/' + user.userId}" method="post">
+        <button type="submit">Delete</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
