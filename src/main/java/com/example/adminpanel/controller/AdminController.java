@@ -1,6 +1,7 @@
 package com.example.adminpanel.controller;
 
 import com.example.adminpanel.dto.IngredientDto;
+import com.example.adminpanel.dto.PostDto;
 import com.example.adminpanel.dto.TagDto;
 import com.example.adminpanel.dto.UserDto;
 import com.example.adminpanel.service.AdminService;
@@ -19,6 +20,11 @@ public class AdminController {
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
+    }
+
+    @GetMapping("/")
+    public ModelAndView index() {
+        return new ModelAndView("index");
     }
 
     @GetMapping("/tags")
@@ -42,6 +48,14 @@ public class AdminController {
         List<UserDto> userDtos = adminService.getUsers();
         ModelAndView modelAndView = new ModelAndView("users");
         modelAndView.addObject("users",userDtos);
+        return modelAndView;
+    }
+
+    @GetMapping("/posts")
+    public ModelAndView showPosts() {
+        List<PostDto> postDtos = adminService.getPosts();
+        ModelAndView modelAndView = new ModelAndView("posts");
+        modelAndView.addObject("posts", postDtos);
         return modelAndView;
     }
 

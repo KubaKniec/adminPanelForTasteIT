@@ -1,8 +1,7 @@
 package com.example.adminpanel.service;
 
-import com.example.adminpanel.dto.IngredientDto;
-import com.example.adminpanel.dto.TagDto;
-import com.example.adminpanel.dto.UserDto;
+import com.example.adminpanel.dto.*;
+import com.example.adminpanel.wrapper.PostListWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.MissingResourceException;
 
 @Service
 public class AdminService {
@@ -45,6 +45,16 @@ public class AdminService {
         return restTemplate.getForObject(URL+"/user/"+id, UserDto.class);
     }
 
+    public List<PostDto> getPosts() {
+        PostListWrapper response = restTemplate.getForObject(URL + "post/all", PostListWrapper.class);
+        if (response != null) {
+            return response.getPosts();
+        }
+        return new ArrayList<>();
+        //TODO zmienić na wyjatek
+        //TODO naprawić bo nie działa, cannot deserialize value of postListWrapper
+    }
+
     public void deleteTagById(String id) {
         restTemplate.delete(URL+"tag/" + id);
     }
@@ -52,8 +62,20 @@ public class AdminService {
         restTemplate.delete(URL+"ingredient/" + id);
     }
 
+    private void deletePostsByUserId(String id) {
+        PostListWrapper response = restTemplate.getForObject(URL + "user/" + id + "/posts", PostListWrapper.class);
+        if (response != null && response.getPosts() != null) {
+            for (PostDto postDto : response.getPosts()) {
+                restTemplate.delete(URL + "post/" + postDto.getPostId());
+            }
+        }
+
+    }
+
     public void deleteUserById(String id) {
-        if (!getUserById(id).getEmail().equals(currentEmail))
+        if (!getUserById(id).getEmail().equals(currentEmail)) {
+            deletePostsByUserId(id);
             restTemplate.delete(URL+"user/"+id);
+        }
     }
 }
