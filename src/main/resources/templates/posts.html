@@ -6,7 +6,6 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <style>
-        /* kontenery */
         .recipe-content,
         .picture-content {
             display: none;
@@ -18,7 +17,6 @@
             max-width: 600px;
         }
 
-        /* przyciski toggle */
         .toggle-recipe,
         .toggle-pictures {
             margin-bottom: 0.5em;
@@ -26,19 +24,18 @@
             font-size: 0.9em;
         }
 
-        /* usuń kropki i wcięcia wewnątrz .recipe-content i .picture-content */
         .recipe-content ul,
         .picture-content ul {
             list-style: none;
             margin: 0;
             padding: 0;
         }
+
         .recipe-content li,
         .picture-content li {
             margin: 0.25em 0;
         }
 
-        /* dodatkowa siatka dla galerii */
         .picture-content ul {
             display: inline-flex;
             flex-wrap: wrap;
@@ -49,16 +46,22 @@
         .picture-content img {
             max-width: 120px;
             border-radius: 4px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
             transition: transform 0.2s;
             cursor: pointer;
         }
+
         .picture-content img:hover {
             transform: scale(1.05);
         }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 25px
+        }
     </style>
-
-
     <script>
         function toggleRecipe(id) {
             const recipeDiv = document.getElementById('recipe-' + id);
@@ -72,11 +75,13 @@
                 btn.textContent = 'Toggle';
             }
         }
+
         function togglePictures(id) {
             const picDiv = document.getElementById(id);
             if (!picDiv) return;
             picDiv.style.display = (picDiv.style.display === 'block' ? 'none' : 'block');
         }
+
         document.addEventListener('DOMContentLoaded', () => {
             let formToSubmit = null;
             const modal = document.getElementById('confirmModal');
@@ -114,7 +119,7 @@
     </div>
 </div>
 <button onclick="location.href='/'">Main Page</button>
-<h1>Posts</h1>
+<h1 style="text-align: center;">Posts</h1>
 <div class="filter-container">
     <form th:action="@{/posts}" method="get" class="filter-form">
         <input
@@ -174,7 +179,8 @@
                     </ul>
                     <strong>Ingredients:</strong>
                     <ul>
-                        <li th:each="ing : ${post.recipe.ingredientsWithMeasurements}" th:text="${ing.name + ' - ' + ing.measurement?.value + ' ' + ing.measurement?.unit}"></li>
+                        <li th:each="ing : ${post.recipe.ingredientsWithMeasurements}"
+                            th:text="${ing.name + ' - ' + ing.measurement?.value + ' ' + ing.measurement?.unit}"></li>
                     </ul>
                 </div>
                 <div th:if="${post.recipe == null}">
@@ -193,7 +199,7 @@
                 <div th:if="${post.postMedia != null and !#lists.isEmpty(post.postMedia.pictures)}">
                     <ul>
                         <li th:each="src : ${post.postMedia.pictures}">
-                            <img th:src="${src}" th:alt="Image" />
+                            <img th:src="${src}" th:alt="Image"/>
                         </li>
                     </ul>
                 </div>
