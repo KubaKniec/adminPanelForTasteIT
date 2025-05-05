@@ -9,7 +9,7 @@ public class PostDto {
     private UserDto postAuthorDto;
     private String postType;
     private PostMediaDto postMedia;
-    private List<String> recipe;
+    private RecipeDto recipe;
     private Boolean isAlcoholic;
     private List<TagDto> tags = new ArrayList<>();
     private Date createdDate;
@@ -17,7 +17,7 @@ public class PostDto {
     private Long commentsCount;
     private Boolean likedByCurrentUser;
 
-    public PostDto(String postId, UserDto postAuthorDto, String postType, PostMediaDto postMedia, List<String> recipe, Boolean isAlcoholic, List<TagDto> tags, Date createdDate, Long likesCount, Long commentsCount, Boolean likedByCurrentUser) {
+    public PostDto(String postId, UserDto postAuthorDto, String postType, PostMediaDto postMedia, RecipeDto recipe, Boolean isAlcoholic, List<TagDto> tags, Date createdDate, Long likesCount, Long commentsCount, Boolean likedByCurrentUser) {
         this.postId = postId;
         this.postAuthorDto = postAuthorDto;
         this.postType = postType;
@@ -50,11 +50,11 @@ public class PostDto {
         return postMedia;
     }
 
-    public List<String> getRecipe() {
+    public RecipeDto getRecipe() {
         return recipe;
     }
 
-    public Boolean getAlcoholic() {
+    public Boolean getIsAlcoholic() {
         return isAlcoholic;
     }
 
@@ -76,5 +76,22 @@ public class PostDto {
 
     public Boolean getLikedByCurrentUser() {
         return likedByCurrentUser;
+    }
+
+    @Override
+    public String toString() {
+        return "PostDto{" +
+                "postId='" + postId + '\'' +
+                ", postAuthorDto=" + postAuthorDto +
+                ", postType='" + postType + '\'' +
+                ", postMedia=" + postMedia +
+                ", recipe=" + recipe +
+                ", isAlcoholic=" + isAlcoholic +
+                ", tags=" + tags +
+                ", createdDate=" + createdDate +
+                ", likesCount=" + likesCount +
+                ", commentsCount=" + commentsCount +
+                ", likedByCurrentUser=" + likedByCurrentUser +
+                '}';
     }
 }

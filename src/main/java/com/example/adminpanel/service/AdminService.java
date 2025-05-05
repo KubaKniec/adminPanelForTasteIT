@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.MissingResourceException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -45,14 +43,48 @@ public class AdminService {
         return restTemplate.getForObject(URL+"/user/"+id, UserDto.class);
     }
 
-    public List<PostDto> getPosts() {
-        PostListWrapper response = restTemplate.getForObject(URL + "post/all", PostListWrapper.class);
-        if (response != null) {
-            return response.getPosts();
+    public List<PostDto> getPosts(String postIdFilter, String emailFilter) {
+        // 1) fetch
+        PostDto[] response = restTemplate.getForObject(URL + "post/all", PostDto[].class);
+        List<PostDto> posts = response != null
+                ? new ArrayList<>(Arrays.asList(response))
+                : new ArrayList<>();
+
+        // 2) filtr po postId
+        if (postIdFilter != null && !postIdFilter.isBlank()) {
+            posts = posts.stream()
+                    .filter(p -> p.getPostId().contains(postIdFilter))
+                    .collect(Collectors.toList());
         }
-        return new ArrayList<>();
-        //TODO zmienić na wyjatek
-        //TODO naprawić bo nie działa, cannot deserialize value of postListWrapper
+
+        // 3) filtr po email autora
+        if (emailFilter != null && !emailFilter.isBlank()) {
+            posts = posts.stream()
+                    .filter(p -> {
+                        var author = p.getPostAuthorDto();
+                        return author != null
+                                && author.getEmail() != null
+                                && author.getEmail().contains(emailFilter);
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // 4) łączenie obrazków (Twoja istniejąca logika)
+        for (PostDto post : posts) {
+            Map<String, String> combined = new LinkedHashMap<>();
+            if (post.getRecipe().getPictures() != null) {
+                combined.putAll(post.getRecipe().getPictures());
+            }
+            if (post.getPostMedia() != null && post.getPostMedia().getPictures() != null) {
+                List<String> mediaPics = post.getPostMedia().getPictures();
+                for (int i = 0; i < mediaPics.size(); i++) {
+                    combined.put("media" + (i + 1), mediaPics.get(i));
+                }
+            }
+            post.getRecipe().setPictures(combined);
+        }
+
+        return posts;
     }
 
     public void deleteTagById(String id) {

@@ -3,10 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <title>Posts</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        /* kontenery */
+        .recipe-content,
+        .picture-content {
+            display: none;
+            padding: 0.5em;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 0.5em;
+            max-width: 600px;
+        }
+
+        /* przyciski toggle */
+        .toggle-recipe,
+        .toggle-pictures {
+            margin-bottom: 0.5em;
+            padding: 0.4em 0.8em;
+            font-size: 0.9em;
+        }
+
+        /* usuń kropki i wcięcia wewnątrz .recipe-content i .picture-content */
+        .recipe-content ul,
+        .picture-content ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .recipe-content li,
+        .picture-content li {
+            margin: 0.25em 0;
+        }
+
+        /* dodatkowa siatka dla galerii */
+        .picture-content ul {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .picture-content img {
+            max-width: 120px;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .picture-content img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+
+
+    <script>
+        function toggleRecipe(id) {
+            const recipeDiv = document.getElementById('recipe-' + id);
+            const btn = document.getElementById('btnRecipe-' + id);
+            if (!recipeDiv || !btn) return;
+            if (recipeDiv.style.display === 'none' || recipeDiv.style.display === '') {
+                recipeDiv.style.display = 'block';
+                btn.textContent = 'Toggle';
+            } else {
+                recipeDiv.style.display = 'none';
+                btn.textContent = 'Toggle';
+            }
+        }
+        function togglePictures(id) {
+            const picDiv = document.getElementById(id);
+            if (!picDiv) return;
+            picDiv.style.display = (picDiv.style.display === 'block' ? 'none' : 'block');
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            let formToSubmit = null;
+            const modal = document.getElementById('confirmModal');
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+            // Delete confirmation
+            document.querySelectorAll('button[type="submit"]').forEach(btn => {
+                if (btn.textContent.trim().toLowerCase() === 'delete') {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        formToSubmit = btn.closest('form');
+                        modal.style.display = 'flex';
+                    });
+                }
+            });
+            yesBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                if (formToSubmit) formToSubmit.submit();
+            });
+            noBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                formToSubmit = null;
+            });
+        });
+    </script>
 </head>
 <body>
-
 <div id="confirmModal">
     <div class="modal-content">
         <p>Are you sure you want to delete this post?</p>
@@ -16,64 +113,95 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        let formToSubmit = null;
-        const modal = document.getElementById('confirmModal');
-        const yesBtn = document.getElementById('confirmYes');
-        const noBtn = document.getElementById('confirmNo');
-
-        document.querySelectorAll('button[type="submit"]').forEach(btn => {
-            if (btn.textContent.trim().toLowerCase() === 'delete') {
-                btn.addEventListener('click', e => {
-                    e.preventDefault();
-                    formToSubmit = btn.closest('form');
-                    modal.style.display = 'flex';
-                });
-            }
-        });
-        yesBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            if (formToSubmit) formToSubmit.submit();
-        });
-        noBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            formToSubmit = null;
-        });
-    });
-</script>
-
 <button onclick="location.href='/'">Main Page</button>
-
-<h1 style="text-align: center;">Posts</h1>
+<h1>Posts</h1>
+<div class="filter-container">
+    <form th:action="@{/posts}" method="get" class="filter-form">
+        <input
+                type="text"
+                name="postId"
+                placeholder="Filter by Post ID"
+                class="form-control"
+                th:value="${postIdFilter}"
+        />
+        <input
+                type="text"
+                name="email"
+                placeholder="Filter by Author Email"
+                class="form-control"
+                th:value="${emailFilter}"
+        />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a th:if="${(postIdFilter != null and postIdFilter != '')
+                  or (emailFilter != null and emailFilter != '')}"
+           th:href="@{/posts}"
+           class="btn btn-secondary">Reset</a>
+    </form>
+</div>
 
 <table>
     <thead>
     <tr>
-        <th>ID</th>
+        <th>Post ID</th>
         <th>Author</th>
         <th>Type</th>
         <th>Recipe</th>
-        <th>Alcoholic</th>
-        <th>Likes</th>
-        <th>Comments</th>
+        <th>Pictures</th>
         <th>Action</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="post : ${posts}">
         <td th:text="${post.postId}"></td>
-        <td th:text="${post.postAuthorDto?.username}"></td>
+        <td>
+            <span th:text="${post.postAuthorDto.displayName}"></span>
+            <span th:text="${post.postAuthorDto.email}"></span>
+
+        </td>
         <td th:text="${post.postType}"></td>
         <td>
-            <ul>
-                <li th:each="item : ${post.recipe}" th:text="${item}"></li>
-            </ul>
+            <button type="button"
+                    th:id="${'btnRecipe-' + post.postId}"
+                    class="toggle-recipe"
+                    th:attr="onclick=|toggleRecipe('${post.postId}')|">
+                Toggle
+            </button>
+            <div th:id="${'recipe-' + post.postId}" class="recipe-content">
+                <div th:if="${post.recipe != null}">
+                    <strong>Recipe Steps:</strong>
+                    <ul>
+                        <li th:each="entry : ${post.recipe.steps}" th:text="${entry.key + ' - ' + entry.value}"></li>
+                    </ul>
+                    <strong>Ingredients:</strong>
+                    <ul>
+                        <li th:each="ing : ${post.recipe.ingredientsWithMeasurements}" th:text="${ing.name + ' - ' + ing.measurement?.value + ' ' + ing.measurement?.unit}"></li>
+                    </ul>
+                </div>
+                <div th:if="${post.recipe == null}">
+                    <em>No recipe data available.</em>
+                </div>
+            </div>
         </td>
-        <td th:text="${post.isAlcoholic ? 'Yes' : 'No'}"></td>
-        <td th:text="${post.likesCount}"></td>
-        <td th:text="${post.commentsCount}"></td>
+        <td>
+            <button type="button"
+                    th:id="${'btnPicMedia-' + post.postId}"
+                    class="toggle-pictures"
+                    th:attr="onclick=|togglePictures('media-${post.postId}')|">
+                Toggle
+            </button>
+            <div th:id="${'media-' + post.postId}" class="picture-content">
+                <div th:if="${post.postMedia != null and !#lists.isEmpty(post.postMedia.pictures)}">
+                    <ul>
+                        <li th:each="src : ${post.postMedia.pictures}">
+                            <img th:src="${src}" th:alt="Image" />
+                        </li>
+                    </ul>
+                </div>
+                <div th:if="${post.postMedia == null or #lists.isEmpty(post.postMedia.pictures)}">
+                    <em>No Images</em>
+                </div>
+            </div>
+        </td>
         <td>
             <form th:action="@{'/posts/' + ${post.postId}}" method="post">
                 <button type="submit">Delete</button>
@@ -82,6 +210,5 @@
     </tr>
     </tbody>
 </table>
-
 </body>
 </html>

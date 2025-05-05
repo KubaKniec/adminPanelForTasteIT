@@ -10,8 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -52,10 +54,15 @@ public class AdminController {
     }
 
     @GetMapping("/posts")
-    public ModelAndView showPosts() {
-        List<PostDto> postDtos = adminService.getPosts();
+    public ModelAndView showPosts(
+            @RequestParam(value = "postId",  required = false) String postIdFilter,
+            @RequestParam(value = "email",   required = false) String emailFilter
+    ) {
+        List<PostDto> postDtos = adminService.getPosts(postIdFilter, emailFilter);
         ModelAndView modelAndView = new ModelAndView("posts");
         modelAndView.addObject("posts", postDtos);
+        modelAndView.addObject("postIdFilter",  postIdFilter);
+        modelAndView.addObject("emailFilter",   emailFilter);
         return modelAndView;
     }
 
