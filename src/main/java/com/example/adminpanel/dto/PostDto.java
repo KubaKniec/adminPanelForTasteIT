@@ -17,22 +17,6 @@ public class PostDto {
     private Long commentsCount;
     private Boolean likedByCurrentUser;
 
-    public PostDto(String postId, UserDto postAuthorDto, String postType, PostMediaDto postMedia, RecipeDto recipe, Boolean isAlcoholic, List<TagDto> tags, Date createdDate, Long likesCount, Long commentsCount, Boolean likedByCurrentUser) {
-        this.postId = postId;
-        this.postAuthorDto = postAuthorDto;
-        this.postType = postType;
-        this.postMedia = postMedia;
-        this.recipe = recipe;
-        this.isAlcoholic = isAlcoholic;
-        this.tags = tags;
-        this.createdDate = createdDate;
-        this.likesCount = likesCount;
-        this.commentsCount = commentsCount;
-        this.likedByCurrentUser = likedByCurrentUser;
-    }
-
-    public PostDto() {
-    }
 
     public String getPostId() {
         return postId;

@@ -8,7 +8,7 @@ import java.util.List;
 public class PostMediaDto {
     private String title;
     private String description;
-    private List<String> pictures;   // ← dodane
+    private List<String> pictures;
 
     public PostMediaDto() { }
 

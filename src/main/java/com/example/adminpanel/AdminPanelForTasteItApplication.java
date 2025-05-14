@@ -11,3 +11,10 @@ public class AdminPanelForTasteItApplication {
 	}
 
 }
+
+
+/*
+TODO:
+ testy
+ sprawdzić czy przy usuwaniu usera usuwaja sie jego posty
+*/

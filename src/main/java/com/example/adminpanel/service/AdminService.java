@@ -4,6 +4,7 @@ import com.example.adminpanel.dto.IngredientDto;
 import com.example.adminpanel.dto.PostDto;
 import com.example.adminpanel.dto.TagDto;
 import com.example.adminpanel.dto.UserDto;
+import com.example.adminpanel.filter.UserFilter;
 import com.example.adminpanel.wrapper.PostListWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
-    private static final String URL = "http://localhost:8080/api/v1/";
+    public static final String URL = "http://localhost:8080/api/v1/";
     private RestTemplate restTemplate;
     @Value("${login}")
     private String currentEmail;
@@ -64,8 +65,16 @@ public class AdminService {
         return list;
     }
 
-    public List<UserDto> getUsers(String idFilter, String emailFilter, String displayNameFilter) {
+    public List<UserDto> getUsers(UserFilter userFilter) {
         UserDto[] arr = restTemplate.getForObject(URL + "user/", UserDto[].class);
+        List<UserDto> list = filterUsers(userFilter, arr);
+        return list;
+    }
+
+    List<UserDto> filterUsers(UserFilter userFilter, UserDto[] arr) {
+        String idFilter = userFilter.getId();
+        String emailFilter = userFilter.getEmail();
+        String displayNameFilter = userFilter.getDisplayName();
         List<UserDto> list = arr != null
                 ? new ArrayList<>(Arrays.asList(arr))
                 : new ArrayList<>();
@@ -139,19 +148,19 @@ public class AdminService {
         restTemplate.delete(URL + "ingredient/" + id);
     }
 
-    private void deletePostsByUserId(String id) {//TODO do testu
+    public void deleteUserById(String id) {
+        if (!getUserById(id).getEmail().equals(currentEmail)) {
+            deletePostsByUserId(id);
+            restTemplate.delete(URL + "user/" + id);
+        }
+    }
+
+    void deletePostsByUserId(String id) {               //TODO do testu, niech da np 5 postów i niech 5 razy usunie. Mockito.when?
         PostListWrapper response = restTemplate.getForObject(URL + "user/" + id + "/posts", PostListWrapper.class);
         if (response != null && response.getPosts() != null) {
             for (PostDto postDto : response.getPosts()) {
                 restTemplate.delete(URL + "post/" + postDto.getPostId());
             }
-        }
-    }
-
-    public void deleteUserById(String id) {
-        if (!getUserById(id).getEmail().equals(currentEmail)) {
-            deletePostsByUserId(id);
-            restTemplate.delete(URL + "user/" + id);
         }
     }
 

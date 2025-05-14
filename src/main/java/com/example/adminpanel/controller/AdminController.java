@@ -4,6 +4,7 @@ import com.example.adminpanel.dto.IngredientDto;
 import com.example.adminpanel.dto.PostDto;
 import com.example.adminpanel.dto.TagDto;
 import com.example.adminpanel.dto.UserDto;
+import com.example.adminpanel.filter.UserFilter;
 import com.example.adminpanel.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,19 +55,30 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ModelAndView showUsers(
-            @RequestParam(value = "id", required = false) String idFilter,
-            @RequestParam(value = "email", required = false) String emailFilter,
-            @RequestParam(value = "displayName", required = false) String displayNameFilter
-    ) {
-        List<UserDto> usersDtos = adminService.getUsers(idFilter, emailFilter, displayNameFilter);
+    public ModelAndView showUsers(UserFilter userFilter) {
+        List<UserDto> usersDtos = adminService.getUsers(userFilter);
         ModelAndView modelAndView = new ModelAndView("users");
         modelAndView.addObject("users", usersDtos);
-        modelAndView.addObject("idFilter", idFilter);
-        modelAndView.addObject("emailFilter", emailFilter);
-        modelAndView.addObject("displayNameFilter", displayNameFilter);
+        modelAndView.addObject("idFilter", userFilter.getId());
+        modelAndView.addObject("emailFilter", userFilter.getEmail());
+        modelAndView.addObject("displayNameFilter", userFilter.getDisplayName()); // TODO zmienic
         return modelAndView;
     }
+
+//    @GetMapping("/users")
+//    public ModelAndView showUsers(
+//            @RequestParam(value = "id", required = false) String idFilter,
+//            @RequestParam(value = "email", required = false) String emailFilter,
+//            @RequestParam(value = "displayName", required = false) String displayNameFilter
+//    ) {
+//        List<UserDto> usersDtos = adminService.getUsers(idFilter, emailFilter, displayNameFilter);
+//        ModelAndView modelAndView = new ModelAndView("users");
+//        modelAndView.addObject("users", usersDtos);
+//        modelAndView.addObject("idFilter", idFilter);
+//        modelAndView.addObject("emailFilter", emailFilter);
+//        modelAndView.addObject("displayNameFilter", displayNameFilter);
+//        return modelAndView;
+//    }
 
     @GetMapping("/posts")
     public ModelAndView showPosts(

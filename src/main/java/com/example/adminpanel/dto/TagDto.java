@@ -5,12 +5,6 @@ public class TagDto {
     private String tagName;
     private String tagType;
 
-    public TagDto(String tagId, String tagName, String tagType) {
-        this.tagId = tagId;
-        this.tagName = tagName;
-        this.tagType = tagType;
-    }
-
     public TagDto() {
     }
 
