@@ -3,15 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fafafa;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form::before {
+            content: 'Login';
+            display: block;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-align: center;
+        }
+
+        form input[type="text"],
+        form input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
 <form th:action="@{/login}" method="post">
     <input type="text"     name="username" placeholder="Login"/>
     <input type="password" name="password" placeholder="Hasło"/>
     <button type="submit">Zaloguj</button>
-    <div th:if="${param.error}">Błędne dane!</div>
-    <div th:if="${param.logout}">Wylogowano.</div>
+    <div th:if="${param.error}">Incorrect login details</div>
+    <div th:if="${param.logout}">Logged Out.</div>
 </form>
-
 </body>
 </html>

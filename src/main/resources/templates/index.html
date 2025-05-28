@@ -75,7 +75,6 @@
         }
     </style>
 </head>
-
 <body class="navbar">
 <h3>Admin Panel</h3>
 <div>
@@ -83,6 +82,11 @@
     <button onclick="location.href='/ingredients'">Ingredients</button>
     <button onclick="location.href='/users'">Users</button>
     <button onclick="location.href='/posts'">Posts</button>
+</div>
+<div style="padding-top: 25px">
+    <form th:action="@{/logout}" method="post" style="display:inline">
+        <button type="submit" class="btn btn-outline-secondary">Logout</button>
+    </form>
 </div>
 </body>
 </html>

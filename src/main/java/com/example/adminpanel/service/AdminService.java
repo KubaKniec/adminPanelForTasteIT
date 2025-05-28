@@ -7,6 +7,9 @@ import com.example.adminpanel.dto.UserDto;
 import com.example.adminpanel.filter.UserFilter;
 import com.example.adminpanel.wrapper.PostListWrapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -145,6 +148,18 @@ public class AdminService {
             post.getRecipe().setPictures(combined);
         }
         return posts;
+    }
+
+    public void logout(String adminToken) {
+        String uri = URL + "auth/logout";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, adminToken);
+        restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                Void.class
+        );
     }
 
     public void deleteTagById(String id) {

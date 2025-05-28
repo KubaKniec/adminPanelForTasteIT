@@ -6,6 +6,8 @@ import com.example.adminpanel.dto.TagDto;
 import com.example.adminpanel.dto.UserDto;
 import com.example.adminpanel.filter.UserFilter;
 import com.example.adminpanel.service.AdminService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -121,7 +123,7 @@ public class AdminController {
     }
 
     @PostMapping("users/promote")
-    public String prmoteUserByEmail(@RequestParam String email) {
+    public String promoteUserByEmail(@RequestParam("email") String email) {
         adminService.promoteUserByEmail(email);
         return "redirect:/users";
     }
@@ -137,5 +139,18 @@ public class AdminController {
         System.out.println(id);
         adminService.deletePostById(id);
         return "redirect:/posts";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String adminToken = (String) session.getAttribute("AUTH_TOKEN");
+            if (adminToken != null) {
+                adminService.logout(adminToken);
+            }
+            session.invalidate();
+        }
+        return "redirect:/login?logout";
     }
 }

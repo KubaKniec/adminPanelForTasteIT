@@ -43,6 +43,9 @@
     });
 </script>
 <button onclick="location.href='/'">Main Page</button>
+<form th:action="@{/logout}" method="post" style="display:inline">
+    <button type="submit" class="btn btn-outline-secondary">Logout</button>
+</form>
 <h1 style="text-align: center;">Users</h1>
 <div class="filter-container">
     <form th:action="@{/users}" method="get" class="filter-form">
