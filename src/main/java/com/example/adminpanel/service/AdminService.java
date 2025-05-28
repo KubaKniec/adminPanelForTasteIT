@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 @Service
 public class AdminService {
     public static final String URL = "http://localhost:8080/api/v1/";
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
     @Value("${login}")
     private String currentEmail;
 
@@ -29,20 +30,23 @@ public class AdminService {
         List<TagDto> list = arr != null
                 ? new ArrayList<>(Arrays.asList(arr))
                 : new ArrayList<>();
+        return filterTags(list, idFilter, nameFilter);
+    }
 
+    private List<TagDto> filterTags(List<TagDto> tags, String idFilter, String nameFilter) {
+        List<TagDto> result = tags;
         if (idFilter != null && !idFilter.isBlank()) {
-            list = list.stream()
+            result = result.stream()
                     .filter(t -> t.getTagId().contains(idFilter))
                     .collect(Collectors.toList());
         }
         if (nameFilter != null && !nameFilter.isBlank()) {
             String low = nameFilter.toLowerCase();
-            list = list.stream()
+            result = result.stream()
                     .filter(t -> t.getTagName().toLowerCase().contains(low))
                     .collect(Collectors.toList());
         }
-
-        return list;
+        return result;
     }
 
     public List<IngredientDto> getIngredients(String idFilter, String nameFilter) {
@@ -50,28 +54,31 @@ public class AdminService {
         List<IngredientDto> list = arr != null
                 ? new ArrayList<>(Arrays.asList(arr))
                 : new ArrayList<>();
+        return filterIngredients(list, idFilter, nameFilter);
+    }
 
+    private List<IngredientDto> filterIngredients(List<IngredientDto> ingredients, String idFilter, String nameFilter) {
+        List<IngredientDto> result = ingredients;
         if (idFilter != null && !idFilter.isBlank()) {
-            list = list.stream()
+            result = result.stream()
                     .filter(i -> i.getIngredientId().contains(idFilter))
                     .collect(Collectors.toList());
         }
         if (nameFilter != null && !nameFilter.isBlank()) {
             String low = nameFilter.toLowerCase();
-            list = list.stream()
+            result = result.stream()
                     .filter(i -> i.getName().toLowerCase().contains(low))
                     .collect(Collectors.toList());
         }
-        return list;
+        return result;
     }
 
     public List<UserDto> getUsers(UserFilter userFilter) {
         UserDto[] arr = restTemplate.getForObject(URL + "user/", UserDto[].class);
-        List<UserDto> list = filterUsers(userFilter, arr);
-        return list;
+        return filterUsers(userFilter, arr);
     }
 
-    List<UserDto> filterUsers(UserFilter userFilter, UserDto[] arr) {
+    private List<UserDto> filterUsers(UserFilter userFilter, UserDto[] arr) {
         String idFilter = userFilter.getId();
         String emailFilter = userFilter.getEmail();
         String displayNameFilter = userFilter.getDisplayName();
@@ -101,7 +108,7 @@ public class AdminService {
     }
 
     public UserDto getUserById(String id) {
-        return restTemplate.getForObject(URL + "/user/" + id, UserDto.class);
+        return restTemplate.getForObject(URL + "user/" + id, UserDto.class);
     }
 
     public List<PostDto> getPosts(String postIdFilter, String emailFilter) {
@@ -155,7 +162,7 @@ public class AdminService {
         }
     }
 
-    void deletePostsByUserId(String id) {               //TODO do testu, niech da np 5 postów i niech 5 razy usunie. Mockito.when?
+    private void deletePostsByUserId(String id) {
         PostListWrapper response = restTemplate.getForObject(URL + "user/" + id + "/posts", PostListWrapper.class);
         if (response != null && response.getPosts() != null) {
             for (PostDto postDto : response.getPosts()) {
@@ -166,5 +173,13 @@ public class AdminService {
 
     public void deletePostById(String id) {
         restTemplate.delete(URL + "post/" + id);
+    }
+
+    public void promoteUserByEmail(String email) {
+        restTemplate.postForEntity(URL + "auth/promote?email=" + email, null, Void.class);
+    }
+
+    public void demoteUserByEmail(String email) {
+        restTemplate.postForEntity(URL + "auth/demote?email=" + email, null, Void.class);
     }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    <input type="text"     name="username" placeholder="Login"/>
+    <input type="password" name="password" placeholder="Hasło"/>
+    <button type="submit">Zaloguj</button>
+    <div th:if="${param.error}">Błędne dane!</div>
+    <div th:if="${param.logout}">Wylogowano.</div>
+</form>
+
+</body>
+</html>

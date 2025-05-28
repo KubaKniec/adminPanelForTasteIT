@@ -62,6 +62,18 @@ public class PostDto {
         return likedByCurrentUser;
     }
 
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public void setRecipe(RecipeDto recipe) {
+        this.recipe = recipe;
+    }
+
+    public void setPostMedia(PostMediaDto postMedia) {
+        this.postMedia = postMedia;
+    }
+
     @Override
     public String toString() {
         return "PostDto{" +

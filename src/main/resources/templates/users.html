@@ -79,6 +79,8 @@
         <th>Profile Picture</th>
         <th>Roles</th>
         <th>Action</th>
+        <th>Promote</th>
+        <th>Demote</th>
     </tr>
     </thead>
     <tbody>
@@ -100,6 +102,16 @@
         <td>
             <form th:action="${'http://localhost:8081/users/' + user.userId}" method="post">
                 <button type="submit">Delete</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="${'http://localhost:8081/users/promote?email=' + user.getEmail()}" method="post">
+                <button type="submit">Promote</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="${'http://localhost:8081/users/demote?email=' + user.getEmail()}" method="post">
+                <button type="submit">Demote</button>
             </form>
         </td>
     </tr>

@@ -23,6 +23,11 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
     @GetMapping("/")
     public ModelAndView index() {
         return new ModelAndView("index");
@@ -112,6 +117,18 @@ public class AdminController {
     private String deleteUserById(@PathVariable String id) {
         System.out.println(id);
         adminService.deleteUserById(id);
+        return "redirect:/users";
+    }
+
+    @PostMapping("users/promote")
+    public String prmoteUserByEmail(@RequestParam String email) {
+        adminService.promoteUserByEmail(email);
+        return "redirect:/users";
+    }
+
+    @PostMapping("users/demote")
+    public String demoteUserByEmail(@RequestParam String email) {
+        adminService.demoteUserByEmail(email);
         return "redirect:/users";
     }
 

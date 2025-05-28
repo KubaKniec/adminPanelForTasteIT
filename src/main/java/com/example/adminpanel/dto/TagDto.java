@@ -8,6 +8,12 @@ public class TagDto {
     public TagDto() {
     }
 
+    public TagDto(String tagId, String tagName, String tagType) {
+        this.tagId = tagId;
+        this.tagName = tagName;
+        this.tagType = tagType;
+    }
+
     public String getTagId() {
         return tagId;
     }

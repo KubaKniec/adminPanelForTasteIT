@@ -14,4 +14,8 @@ public class PostListWrapper{
     public void setPosts(List<PostDto> posts) {
         this.posts = posts;
     }
+
+    public PostListWrapper(List<PostDto> posts) {
+        this.posts = posts;
+    }
 }
