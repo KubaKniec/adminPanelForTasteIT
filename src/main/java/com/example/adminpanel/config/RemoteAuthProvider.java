@@ -30,7 +30,7 @@ public class RemoteAuthProvider implements AuthenticationProvider {
         Map<String,String> body = Map.of("email", username,
                 "password", password);
         ResponseEntity<Map> res = rest.exchange(
-                remoteBase + "auth/login",
+                remoteBase + "auth/admin/login",
                 HttpMethod.POST,
                 new HttpEntity<>(body, hdr),
                 Map.class);
@@ -38,15 +38,10 @@ public class RemoteAuthProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Remote auth failed");
         }
         String jsid = (String) res.getBody().get("sessionToken");
-        jsid = parseSessionId(jsid);// własna utilka
         RemotePrincipal principal = new RemotePrincipal(username, jsid, new ArrayList<>());
         return new UsernamePasswordAuthenticationToken(principal, null, new ArrayList<>());
     }
 
-    private String parseSessionId(String jsid) {
-        System.out.println("otrzymano session token " + jsid);
-        return jsid;
-    }
 
     @Override
     public boolean supports(Class<?> c) {

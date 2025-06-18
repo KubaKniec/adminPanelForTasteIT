@@ -1,5 +1,6 @@
 package com.example.adminpanel.service;
 
+import com.example.adminpanel.config.RemotePrincipal;
 import com.example.adminpanel.dto.IngredientDto;
 import com.example.adminpanel.dto.PostDto;
 import com.example.adminpanel.dto.TagDto;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,9 +23,6 @@ import java.util.stream.Collectors;
 public class AdminService {
     public static final String URL = "http://localhost:8080/api/v1/";
     private final RestTemplate restTemplate;
-
-    @Value("${login}")
-    private String currentEmail;
 
     public AdminService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -170,13 +170,6 @@ public class AdminService {
         restTemplate.delete(URL + "ingredient/" + id);
     }
 
-    public void deleteUserById(String id) {
-        if (!getUserById(id).getEmail().equals(currentEmail)) {
-            deletePostsByUserId(id);
-            restTemplate.delete(URL + "user/" + id);
-        }
-    }
-
     private void deletePostsByUserId(String id) {
         PostListWrapper response = restTemplate.getForObject(URL + "user/" + id + "/posts", PostListWrapper.class);
         if (response != null && response.getPosts() != null) {
@@ -184,6 +177,21 @@ public class AdminService {
                 restTemplate.delete(URL + "post/" + postDto.getPostId());
             }
         }
+    }
+
+    public void deleteUserById(String id) {
+        if (!getUserById(id).getEmail().equals(getLoggedAdmin().username())) {
+            deletePostsByUserId(id);
+            restTemplate.delete(URL + "user/" + id);
+        }
+    }
+
+    private RemotePrincipal getLoggedAdmin(){
+        Authentication a = SecurityContextHolder.getContext().getAuthentication();
+        if (a != null && a.getPrincipal() instanceof RemotePrincipal p) {
+            return p;
+        }
+        throw new IllegalStateException("Should be logged");
     }
 
     public void deletePostById(String id) {

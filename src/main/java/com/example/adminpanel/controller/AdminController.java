@@ -117,7 +117,6 @@ public class AdminController {
 
     @PostMapping("users/{id}")
     private String deleteUserById(@PathVariable String id) {
-        System.out.println(id);
         adminService.deleteUserById(id);
         return "redirect:/users";
     }
